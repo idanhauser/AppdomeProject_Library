@@ -16,7 +16,7 @@ public class Book {
     long id;
     private String name;
     private String author;
-    //  private Date publishDate;
+    private int numberOfPages;
 
     public Book() {
     }
@@ -52,17 +52,25 @@ public class Book {
         this.author = author;
     }
 
+    public int getNumberOfPages() {
+        return numberOfPages;
+    }
+
+    public void setNumberOfPages(int numberOfPages) {
+        this.numberOfPages = numberOfPages;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Book)) return false;
         Book book = (Book) o;
-        return getId() == book.getId() && Objects.equals(getName(), book.getName()) && Objects.equals(getAuthor(), book.getAuthor());
+        return getId() == book.getId() && getNumberOfPages() == book.getNumberOfPages() && Objects.equals(getName(), book.getName()) && Objects.equals(getAuthor(), book.getAuthor());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getAuthor());
+        return Objects.hash(getId(), getName(), getAuthor(), getNumberOfPages());
     }
 
     @Override
@@ -71,8 +79,8 @@ public class Book {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", author='" + author + '\'' +
+                ", numberOfPages=" + numberOfPages +
                 '}';
     }
-
-
 }
+
