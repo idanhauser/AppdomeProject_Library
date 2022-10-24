@@ -1,40 +1,36 @@
 package com.example.library.controller;
 
+import cache.LruCache;
 import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.concurrent.TimeUnit;
 
 
 @RequestMapping("api/v1/Library")
 //indicates that the data returned by each method will be written straight into the response body instead of rendering a template.
 @RestController
-public class BookController implements ILibrary<Book> {
+public class BookController {
 
-    private final LibraryOperations Library;
+    private final LibraryDataBase libraryDB;
+    private final BookModelAssembler assembler;
+    private final LruCache<Long, Book> lruCache;
 
     //An BookRepository is injected by constructor into the controller.
     public BookController(BookRepository repository, BookModelAssembler assembler) {
-        Library = new LibraryOperations(repository, assembler);
-    }
-
-    // Aggregate root
-    // tag::get-aggregate-root[]
-    //GET
-    @GetMapping("/books")
-    public
-    //CollectionModel is another Spring HATEOAS container; it’s aimed at encapsulating collections of resources,and lets you include links.
-    CollectionModel<EntityModel<Book>> all() {
-        return Library.all();
+        this.assembler = assembler;
+        libraryDB = new LibraryDataBase(repository, assembler);
+        lruCache = new LruCache<>(3, 1, TimeUnit.MINUTES);
     }
 
 
-    // end::get-aggregate-root[]
     //POST
     @PostMapping("/books")
     public Book newBook(@RequestBody Book newBook) {
-        return Library.newBook(newBook);
+        lruCache.put(newBook.getId(), newBook);//adding book to cache
+        return libraryDB.newBook(newBook);//adding book to database
     }
 
 
@@ -44,22 +40,50 @@ public class BookController implements ILibrary<Book> {
     public
     //EntityModel<T> is a generic container from Spring HATEOAS that includes not only the data but a collection of links.
     //@PathVariable annotation to extract the templated part of the URI, represented by the variable {id}
-    EntityModel<Book> one(@PathVariable Long id) {
-        return Library.one(id);
+    EntityModel<Book> getBook(@PathVariable Long id) {
+        Book book = lruCache.get(id);
+        if (book == null)//book is not in cache we have to read it from the database
+        {
+            book = libraryDB.getBook(id);
+            lruCache.put(id, book);//adding it to the Cache.
+        }
+        return assembler.toModel(book);
 
     }
 
-    //PUT
+  /*  //PUT
     @PutMapping("/books/{id}")
     public Book replaceBook(@RequestBody Book newBook, @PathVariable Long id) {
+        Book editedBook;
+        Book book = lruCache.get(id);
+        if (book == null)//book is not in cache we have to read it from the database
+        {
+            try {
+                book = LibraryDB.one(id);
+                book.setName(newBook.getName());
+                book.setAuthor(newBook.getAuthor());
+                book.setNumberOfPages(newBook.getNumberOfPages());
+            } catch (Exception ex) {
+                if (ex.getClass() == BookNotFoundException.class) {
+                    newBook.setId(id);
+                } else {
+                    throw ex;
+                }
+            }
+            newBook(newBook);
+        }
+        //book was in cache:
+        book.setName(newBook.getName());
+        book.setAuthor(newBook.getAuthor());
+        book.setNumberOfPages(newBook.getNumberOfPages());
 
-        return Library.replaceBook(newBook, id);
-    }
+    }*/
 
     //DELETE
     @DeleteMapping("/books/{id}")
     public void deleteBook(@PathVariable Long id) {
-        this.Library.deleteBook(id);
+        libraryDB.deleteBook(id);//deleting book from database
+        lruCache.delete(id);//deleting book from cache
     }
 }
 

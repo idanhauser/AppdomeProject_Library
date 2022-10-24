@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ILibrary<T> {
 
-    CollectionModel<EntityModel<T>> all();
+    //T replaceBook(@RequestBody T newBook, @PathVariable Long id);
 
     Book newBook(@RequestBody Book newBook);
 
-    EntityModel<T> one(@PathVariable Long id);
+    Book getBook(@PathVariable Long id);
 
-    T replaceBook(@RequestBody T newBook, @PathVariable Long id);
+
 
     void deleteBook(@PathVariable Long id);
 

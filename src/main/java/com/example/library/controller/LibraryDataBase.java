@@ -12,25 +12,19 @@ import java.util.stream.Collectors;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-public class LibraryOperations implements ILibrary<Book> {
+public class LibraryDataBase implements ILibrary<Book> {
 
-    private final BookRepository repository;
+
     private final BookModelAssembler assembler;
+    private final BookRepository repository;
 
     //An BookRepository is injected by constructor into the controller.
-    public LibraryOperations(BookRepository repository, BookModelAssembler assembler) {
+    public LibraryDataBase(BookRepository repository, BookModelAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
     }
 
-    @Override
-    public CollectionModel<EntityModel<Book>> all() {
-        List<EntityModel<Book>> employees = repository.findAll().stream() //
-                .map(assembler::toModel) //
-                .collect(Collectors.toList());
 
-        return CollectionModel.of(employees, linkTo(methodOn(BookController.class).all()).withSelfRel());
-    }
 
     @Override
     public Book newBook(Book newBook) {
@@ -39,13 +33,12 @@ public class LibraryOperations implements ILibrary<Book> {
     }
 
     @Override
-    public EntityModel<Book> one(Long id) {
+    public Book getBook(Long id) {
         Book book = repository.findById(id) //
                 .orElseThrow(() -> new BookNotFoundException(id));
-
-        return assembler.toModel(book);
+        return book;
     }
-
+/*
     @Override
     public Book replaceBook(Book newBook, Long id) {
         return repository.findById(id)
@@ -54,12 +47,12 @@ public class LibraryOperations implements ILibrary<Book> {
                     book.setAuthor(newBook.getAuthor());
                     book.setNumberOfPages(newBook.getNumberOfPages());
                     return repository.save(book);
-                })
+                })//if book wasn't found we add it to the database.
                 .orElseGet(() -> {
                     newBook.setId(id);
                     return repository.save(newBook);
                 });
-    }
+    }*/
 
     @Override
     public void deleteBook(Long id) {
