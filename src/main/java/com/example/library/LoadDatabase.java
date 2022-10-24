@@ -18,9 +18,6 @@ public class LoadDatabase {
 
         return args -> {
             log.info("Database initialized.");
-            log.info("Preloading " + repository.save(new Book("ProgramingC", "Idan hauser",13)));
-            log.info("Preloading " + repository.save(new Book("daibd", "frannco",68)));
-
         };
     }
 }

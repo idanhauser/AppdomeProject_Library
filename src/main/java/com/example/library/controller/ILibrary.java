@@ -6,7 +6,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-public interface Library<T> {
+public interface ILibrary<T> {
 
     CollectionModel<EntityModel<T>> all();
 
