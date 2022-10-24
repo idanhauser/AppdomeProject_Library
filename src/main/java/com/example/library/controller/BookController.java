@@ -13,6 +13,9 @@ import java.util.concurrent.TimeUnit;
 //indicates that the data returned by each method will be written straight into the response body instead of rendering a template.
 @RestController
 public class BookController {
+    private static final int CAPACITY = 3;
+    private static final int EXPIRE_TIME = 1;
+    private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES;
 
     private final LibraryDataBase libraryDB;
     private final BookModelAssembler assembler;
@@ -22,7 +25,7 @@ public class BookController {
     public BookController(BookRepository repository, BookModelAssembler assembler) {
         this.assembler = assembler;
         libraryDB = new LibraryDataBase(repository, assembler);
-        lruCache = new LruCache<>(3, 1, TimeUnit.MINUTES);
+        lruCache = new LruCache<>(CAPACITY, EXPIRE_TIME, TIME_UNIT);
     }
 
 
