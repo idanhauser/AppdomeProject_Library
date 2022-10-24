@@ -16,54 +16,57 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("api/v1/Library")
 //indicates that the data returned by each method will be written straight into the response body instead of rendering a template.
 @RestController
-public class BookController {
+public class BookController implements Library<Book> {
     private final BookRepository repository;
+    private final BookModelAssembler assembler;
 
     //An BookRepository is injected by constructor into the controller.
-    BookController(BookRepository repository) {
+    public BookController(BookRepository repository, BookModelAssembler assembler) {
         this.repository = repository;
+        this.assembler = assembler;
     }
 
     // Aggregate root
     // tag::get-aggregate-root[]
-    @GetMapping("/books")
     //GET
+    @GetMapping("/books")
+    public
     //CollectionModel is another Spring HATEOAS container; it’s aimed at encapsulating collections of resources,and lets you include links.
     CollectionModel<EntityModel<Book>> all() {
 
-        List<EntityModel<Book>> employees = repository.findAll().stream()
-                .map(employee -> EntityModel.of(employee,
-                        linkTo(methodOn(BookController.class).one(employee.getId())).withSelfRel(),
-                        linkTo(methodOn(BookController.class).all()).withRel("books")))
+        List<EntityModel<Book>> employees = repository.findAll().stream() //
+                .map(assembler::toModel) //
                 .collect(Collectors.toList());
 
         return CollectionModel.of(employees, linkTo(methodOn(BookController.class).all()).withSelfRel());
     }
-    // end::get-aggregate-root[]
 
+
+    // end::get-aggregate-root[]
+    //POST
     @PostMapping("/books")
-//POST
-    Book newBook(@RequestBody Book newBook) {
+    public Book newBook(@RequestBody Book newBook) {
         return repository.save(newBook);
     }
 
+
+    //GET
     // Single item
     @GetMapping("/books/{id}")
-    //GET
+    public
     //EntityModel<T> is a generic container from Spring HATEOAS that includes not only the data but a collection of links.
     //@PathVariable annotation to extract the templated part of the URI, represented by the variable {id}
     EntityModel<Book> one(@PathVariable Long id) {
 
-        Book book = repository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
+        Book book = repository.findById(id) //
+                .orElseThrow(() -> new BookNotFoundException(id));
 
-        //Asks that Spring HATEOAS build a link to the BookController's one() method, and flag it as a self link.
-        return EntityModel.of(book, linkTo(methodOn(BookController.class).one(id)).withSelfRel(),
-                linkTo(methodOn(BookController.class).all()).withRel("books"));//Asks Spring HATEOAS to build a link to the aggregate root, all(), and call it "books".
+        return assembler.toModel(book);
     }
 
+    //PUT
     @PutMapping("/books/{id}")
-//PUT
-    Book replaceBook(@RequestBody Book newBook, @PathVariable Long id) {
+    public Book replaceBook(@RequestBody Book newBook, @PathVariable Long id) {
 
         return repository.findById(id)
                 .map(book -> {
@@ -78,9 +81,9 @@ public class BookController {
                 });
     }
 
+    //DELETE
     @DeleteMapping("/books/{id}")
-//DELETE
-    void deleteBook(@PathVariable Long id) {
+    public void deleteBook(@PathVariable Long id) {
         repository.deleteById(id);
     }
 }
