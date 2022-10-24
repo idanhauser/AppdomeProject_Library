@@ -22,10 +22,10 @@ public class Book {
     }
 
 
-    public Book(String name, String author) {
+    public Book(String name, String author, int numberOfPages) {
         this.name = name;
         this.author = author;
-        //this.publishDate = publishDate;
+        this.numberOfPages = numberOfPages;
     }
 
     public long getId() {
