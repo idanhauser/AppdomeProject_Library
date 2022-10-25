@@ -1,25 +1,44 @@
+Appdome Home Assignment
 
-#If you try and query a book that doesn’t exist…
+Idan Hauser.
+# If you want query a book that exists:
+curl -v localhost:8080/api/v1/Library/books/{BookId}| json_pp
+
+#for example:
+curl -v localhost:8080/api/v1/Library/books/1| json_pp
+
+
+# If you try and query a book that doesn't exist:
+
+curl -v localhost:8080/api/v1/Library/books/{BookId}| json_pp
+#for example:
 curl -v localhost:8080/api/v1/Library/books/99| json_pp
 
+# To create a new Book record we use the following command in a terminal:
 
-#To create a new Book record we use the following command in a terminal—the $ 
-#at the beginning signifies that what follows it is a terminal command:
+curl -X POST localhost:8080/api/v1/Library/books -H 'Content-type:application/json' -d '{"name": "{BookName}", "author": "{AuthorName}", "numberOfPages":{NumberOfPages} }'| json_pp
+#for example:
+curl -X POST localhost:8080/api/v1/Library/books -H 'Content-type:application/json' -d '{"name": "AppDomeBook", "author": "AppdomeManager", "numberOfPages":199 }'| json_pp
 
-curl -X POST localhost:8080/api/v1/Library/books -H 'Content-type:application/json' -d '{"name": "Samwise Gamgee", "author": "gardener", "numberOfPages":70 }'| json_pp
+# Then it stores newly created book and sends it back to us:
+->  
+{
+"author" : "AppdomeManager",
+"id" : 1,
+"name" : "AppDomeBook",
+"numberOfPages" : 199
+}
 
-#Then it stores newly created book and sends it back to us
+# Finally, you can delete books like this:
 
-#You can update the book. Let’s change his author.
+curl -X DELETE localhost:8080/api/v1/Library/books/{BookId} | json_pp
 
-$ curl -X PUT localhost:8080/api/v1/Library/books/3 -H 'Content-type:application/json' -d '{"name": "Samwise Gamgee", "author": "ring bearer"}'
-#And we can see the change reflected in the output.
-
-#Finally, you can delete users like this:
-
-$ curl -X DELETE localhost:8080/api/v1/Library/books/3
+#for example:
+curl -X DELETE localhost:8080/api/v1/Library/books/1
 
 # Now if we look again, it's gone
-$ curl localhost:8080/api/v1/Library/books/3
-Could not find book 3
+
+curl localhost:8080/api/v1/Library/books/1
+
+-> Could not find book 1
 

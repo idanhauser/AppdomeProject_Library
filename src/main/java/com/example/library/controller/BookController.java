@@ -1,6 +1,7 @@
 package com.example.library.controller;
 
 import cache.LruCache;
+import com.example.library.exceptions.BookNotFoundException;
 import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,9 +60,22 @@ public class BookController {
 
     //DELETE
     @DeleteMapping("/books/{id}")
-    public void deleteBook(@PathVariable Long id) {
-        libraryDB.removeBook(id);//deleting book from database
-        lruCache.delete(id);//deleting book from cache
+    public void removeBook(@PathVariable Long id) {
+        Book book = lruCache.get(id);
+        if (book == null)//book is not in cache we have to read it from the database in order to check if exists
+        {
+            book = libraryDB.getBook(id);
+            if (book != null) {
+                libraryDB.removeBook(book.getId());
+                lruCache.delete(id);//deleting book from cache
+            }
+        } else//book was in Cache so it exists in the database
+        {
+            libraryDB.removeBook(book.getId());
+            lruCache.delete(id);//deleting book from cache
+        }
+
+
     }
 }
 
