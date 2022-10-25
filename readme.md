@@ -19,7 +19,7 @@ $ curl -X PUT localhost:8080/api/v1/Library/books/3 -H 'Content-type:application
 
 $ curl -X DELETE localhost:8080/api/v1/Library/books/3
 
-# Now if we look again, it's gone
+#Now if we look again, it's gone
 $ curl localhost:8080/api/v1/Library/books/3
 Could not find book 3
 
