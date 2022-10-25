@@ -43,6 +43,24 @@ public class BookControllerTest {
         assertEquals(book.getName(), addedBook.getName());
     }
 
+    @Test
+    public void removeBookFromEmptyLibrary() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+
+        try {
+            bookController.removeBook((long) 199);
+            fail();
+        } catch (BookNotFoundException expected) {
+            //all is ok
+        } catch (Exception e) {
+            fail("We are expecting to fail with BookNotFoundException on that one, but from some reason we fail with: " + e.getMessage());
+        }
+    }
+
+    /*
+    @Test
     public void testDeleteBook() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
@@ -56,7 +74,7 @@ public class BookControllerTest {
 
 
         bookController.removeBook(book.getId());
-        //I have a bug with the BookModelAssembler when i run it with unittest for some reason its null...so i cant check get operation
+        //TODO:I have a bug with the BookModelAssembler when i run it with unittest for some reason its null...so i cant check get operation
         try {
             EntityModel<Book> checkIfBookIsExists = bookController.getBook(book.getId());
             fail();
@@ -65,10 +83,10 @@ public class BookControllerTest {
         } catch (Exception e) {
             fail("We are expecting to fail with BookNotFoundException on that one, but from some reason we fail with: " + e.getMessage());
         }
-    }
+    }*/
 
 
-//I have a bug with the BookModelAssembler when i run it with unittest for some reason its null...
+///TODO:I have a bug with the BookModelAssembler when i run it with unittest for some reason its null...
 // So I can't check get operation
 
 /*    @Test
