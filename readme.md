@@ -1,5 +1,3 @@
-#When the app starts, we can immediately interrogate it.
-curl -v localhost:8080/api/v1/Library/books| json_pp
 
 #If you try and query a book that doesn’t exist…
 curl -v localhost:8080/api/v1/Library/books/99| json_pp
