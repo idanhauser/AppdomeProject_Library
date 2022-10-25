@@ -1,6 +1,7 @@
 package com.example.library.controller;
 
 import com.example.library.LibraryApplication;
+import com.example.library.exceptions.BookNotFoundException;
 import com.example.library.model.Book;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,4 +30,16 @@ class BookControllerTestIT {
                 .postForEntity("http://localhost:" + port + "/api/v1/Library/books", book, String.class);
         assertEquals(200, responseEntity.getStatusCodeValue());
     }
+
+    @Test
+    public void testGetNotExistsBook() {
+        ResponseEntity<String> responseEntity = null;
+
+        responseEntity = this.restTemplate
+                .postForEntity("http://localhost:" + port + "/api/v1/Library/books/", 2022, String.class);
+        assertEquals(400, responseEntity.getStatusCodeValue());
+
+    }
+
+
 }

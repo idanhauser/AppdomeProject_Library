@@ -8,15 +8,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ILibrary<T> {
 
-    //T replaceBook(@RequestBody T newBook, @PathVariable Long id);
+    //T replaceBook(@RequestBody T addBook, @PathVariable Long id);
 
-    Book newBook(@RequestBody Book newBook);
+    Book addBook(@RequestBody Book newBook);
 
     Book getBook(@PathVariable Long id);
 
 
 
-    void deleteBook(@PathVariable Long id);
+    void removeBook(@PathVariable Long id);
 
 
 }
