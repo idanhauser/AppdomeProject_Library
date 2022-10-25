@@ -1,4 +1,4 @@
-Appdome Home Assignment
+#   Appdome Home Assignment
 
 Idan Hauser.
 # If you want query a book that exists:
@@ -36,9 +36,17 @@ curl -X DELETE localhost:8080/api/v1/Library/books/{BookId} | json_pp
 #for example:
 curl -X DELETE localhost:8080/api/v1/Library/books/1
 
-# Now if we look again, it's gone
+#Now if we look again, it's gone
 
 curl localhost:8080/api/v1/Library/books/1
 
 -> Could not find book 1
 
+###addBook
+POST http://localhost:8080/api/v1/Library/books
+
+###getBook
+GET http://localhost:8080/api/v1/Library/books/{{id}}
+
+###removeBook
+DELETE http://localhost:8080/api/v1/Library/books/{{id}}
