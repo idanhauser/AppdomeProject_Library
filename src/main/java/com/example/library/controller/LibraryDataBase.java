@@ -15,19 +15,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class LibraryDataBase implements ILibrary<Book> {
 
 
-    private final BookModelAssembler assembler;
+
     private final BookRepository repository;
 
     //An BookRepository is injected by constructor into the controller.
-    public LibraryDataBase(BookRepository repository, BookModelAssembler assembler) {
+    public LibraryDataBase(BookRepository repository) {
         this.repository = repository;
-        this.assembler = assembler;
+
     }
 
 
 
     @Override
-    public Book newBook(Book newBook) {
+    public Book addBook(Book newBook) {
         return repository.save(newBook);
 
     }
@@ -41,7 +41,7 @@ public class LibraryDataBase implements ILibrary<Book> {
 
 
     @Override
-    public void deleteBook(Long id) {
+    public void removeBook(Long id) {
         repository.deleteById(id);
     }
 }

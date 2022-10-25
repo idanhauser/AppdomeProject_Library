@@ -1,8 +1,10 @@
 package com.example.library.controller;
 
 import cache.LruCache;
+import com.example.library.exceptions.BookNotFoundException;
 import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,32 +19,35 @@ public class BookController {
     private static final int EXPIRE_TIME = 1;
     private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES;
 
+
     private final LibraryDataBase libraryDB;
+
     private final BookModelAssembler assembler;
     private final LruCache<Long, Book> lruCache;
 
     //An BookRepository is injected by constructor into the controller.
+    @Autowired
     public BookController(BookRepository repository, BookModelAssembler assembler) {
         this.assembler = assembler;
-        libraryDB = new LibraryDataBase(repository, assembler);
+
+        libraryDB = new LibraryDataBase(repository);
         lruCache = new LruCache<>(CAPACITY, EXPIRE_TIME, TIME_UNIT);
+
     }
 
 
     //POST
     @PostMapping("/books")
-    public Book newBook(@RequestBody Book newBook) {
+    public Book addBook(@RequestBody Book newBook) {
         lruCache.put(newBook.getId(), newBook);//adding book to cache
-        return libraryDB.newBook(newBook);//adding book to database
+        return libraryDB.addBook(newBook);//adding book to database
     }
 
 
     //GET
     // Single item
     @GetMapping("/books/{id}")
-    public
-
-    EntityModel<Book> getBook(@PathVariable Long id) {
+    public EntityModel<Book> getBook(@PathVariable Long id) {
         Book book = lruCache.get(id);
         if (book == null)//book is not in cache we have to read it from the database
         {
@@ -55,9 +60,22 @@ public class BookController {
 
     //DELETE
     @DeleteMapping("/books/{id}")
-    public void deleteBook(@PathVariable Long id) {
-        libraryDB.deleteBook(id);//deleting book from database
-        lruCache.delete(id);//deleting book from cache
+    public void removeBook(@PathVariable Long id) {
+        Book book = lruCache.get(id);
+        if (book == null)//book is not in cache we have to read it from the database in order to check if exists
+        {
+            book = libraryDB.getBook(id);
+            if (book != null) {
+                libraryDB.removeBook(book.getId());
+                lruCache.delete(id);//deleting book from cache
+            }
+        } else//book was in Cache so it exists in the database
+        {
+            libraryDB.removeBook(book.getId());
+            lruCache.delete(id);//deleting book from cache
+        }
+
+
     }
 }
 
