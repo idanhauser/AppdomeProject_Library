@@ -1,5 +1,7 @@
 package com.example.library.model;
 
+import org.springframework.lang.NonNull;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -14,8 +16,11 @@ public class Book {
 //is marked with more JPA annotations to indicate it’s the primary key and automatically populated by the JPA provider.
     @GeneratedValue
     long id;
+    @NonNull
     private String name;
+    @NonNull
     private String author;
+    @NonNull
     private int numberOfPages;
 
     public Book() {
