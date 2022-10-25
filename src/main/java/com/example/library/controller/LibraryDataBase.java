@@ -38,21 +38,7 @@ public class LibraryDataBase implements ILibrary<Book> {
                 .orElseThrow(() -> new BookNotFoundException(id));
         return book;
     }
-/*
-    @Override
-    public Book replaceBook(Book newBook, Long id) {
-        return repository.findById(id)
-                .map(book -> {
-                    book.setName(newBook.getName());
-                    book.setAuthor(newBook.getAuthor());
-                    book.setNumberOfPages(newBook.getNumberOfPages());
-                    return repository.save(book);
-                })//if book wasn't found we add it to the database.
-                .orElseGet(() -> {
-                    newBook.setId(id);
-                    return repository.save(newBook);
-                });
-    }*/
+
 
     @Override
     public void deleteBook(Long id) {

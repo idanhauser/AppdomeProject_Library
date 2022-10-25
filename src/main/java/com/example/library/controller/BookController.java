@@ -41,8 +41,7 @@ public class BookController {
     // Single item
     @GetMapping("/books/{id}")
     public
-    //EntityModel<T> is a generic container from Spring HATEOAS that includes not only the data but a collection of links.
-    //@PathVariable annotation to extract the templated part of the URI, represented by the variable {id}
+
     EntityModel<Book> getBook(@PathVariable Long id) {
         Book book = lruCache.get(id);
         if (book == null)//book is not in cache we have to read it from the database
@@ -53,34 +52,6 @@ public class BookController {
         return assembler.toModel(book);
 
     }
-
-  /*  //PUT
-    @PutMapping("/books/{id}")
-    public Book replaceBook(@RequestBody Book newBook, @PathVariable Long id) {
-        Book editedBook;
-        Book book = lruCache.get(id);
-        if (book == null)//book is not in cache we have to read it from the database
-        {
-            try {
-                book = LibraryDB.one(id);
-                book.setName(newBook.getName());
-                book.setAuthor(newBook.getAuthor());
-                book.setNumberOfPages(newBook.getNumberOfPages());
-            } catch (Exception ex) {
-                if (ex.getClass() == BookNotFoundException.class) {
-                    newBook.setId(id);
-                } else {
-                    throw ex;
-                }
-            }
-            newBook(newBook);
-        }
-        //book was in cache:
-        book.setName(newBook.getName());
-        book.setAuthor(newBook.getAuthor());
-        book.setNumberOfPages(newBook.getNumberOfPages());
-
-    }*/
 
     //DELETE
     @DeleteMapping("/books/{id}")
